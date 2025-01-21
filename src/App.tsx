@@ -65,6 +65,7 @@ function App() {
   const [currentProject, setCurrentProject] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<'left' | 'right' | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   const nextProject = useCallback(() => {
     if (isAnimating) return;
@@ -94,8 +95,20 @@ function App() {
     }
   }, [isAnimating]);
 
+  const handleCopyEmail = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigator.clipboard.writeText('joaomgsb@gmail.com');
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 bg-mesh">
+      {showToast && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in-out">
+          Email copiado com sucesso!
+        </div>
+      )}
       {/* Hero Section */}
       <header className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -127,10 +140,10 @@ function App() {
                  className="p-2 text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-full transition-all duration-300 hover:scale-110 hover:-rotate-6">
                 <Linkedin className="w-6 h-6" />
               </a>
-              <a href="mailto:joaomgsb@gmail.com" 
+              <button onClick={handleCopyEmail}
                  className="p-2 text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-full transition-all duration-300 hover:scale-110 hover:rotate-6">
                 <Mail className="w-6 h-6" />
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -468,7 +481,7 @@ function App() {
                   <div className="relative aspect-[4/3] rounded-lg overflow-hidden group-hover:transform group-hover:scale-[1.02] transition-all duration-500">
                     <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 via-purple-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                     <img
-                      src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1740"
+                      src="images/senai.jpg"
                       alt="Reconhecimento Acadêmico"
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -601,10 +614,10 @@ function App() {
                  className="text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 hover:-rotate-6">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="mailto:joaomgsb@gmail.com" 
+              <button onClick={handleCopyEmail}
                  className="text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 hover:rotate-6">
                 <Mail className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -614,4 +627,3 @@ function App() {
 }
 
 export default App;
-                
