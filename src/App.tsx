@@ -66,6 +66,11 @@ function App() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<'left' | 'right' | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Minimum distance for a swipe
+  const minSwipeDistance = 50;
 
   const nextProject = useCallback(() => {
     if (isAnimating) return;
@@ -84,6 +89,30 @@ function App() {
       setCurrentProject((prev) => (prev - 1 + projects.length) % projects.length);
     }, 250);
   }, []);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      nextProject();
+    }
+    if (isRightSwipe) {
+      prevProject();
+    }
+  };
 
   useEffect(() => {
     if (isAnimating) {
@@ -359,7 +388,10 @@ function App() {
           </h2>
           <div className="max-w-5xl mx-auto">
             <div className="relative">
-              <div className="glass-card rounded-xl overflow-hidden group hover:bg-gray-900/80 transition-all duration-500 transform hover:-translate-y-2">
+              <div className="glass-card rounded-xl overflow-hidden group hover:bg-gray-900/80 transition-all duration-500 transform hover:-translate-y-2"
+                   onTouchStart={onTouchStart}
+                   onTouchMove={onTouchMove}
+                   onTouchEnd={onTouchEnd}>
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur opacity-30 group-hover:opacity-100 transition duration-1000 animate-pulse"></div>
                 <div className="relative aspect-video bg-gray-900 overflow-hidden perspective">
                   <img 
@@ -423,20 +455,22 @@ function App() {
               </div>
               
               {/* Navigation Buttons */}
-              <button 
-                onClick={prevProject}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 p-3 text-gray-300 hover:text-white bg-gray-900/50 hover:bg-gray-900 rounded-full transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-gray-700 hover:border-blue-500 group"
-                aria-label="Previous project"
-              >
-                <ChevronLeft className="w-6 h-6 group-hover:text-blue-400 transition-colors" />
-              </button>
-              <button 
-                onClick={nextProject}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-16 p-3 text-gray-300 hover:text-white bg-gray-900/50 hover:bg-gray-900 rounded-full transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-gray-700 hover:border-blue-500 group"
-                aria-label="Next project"
-              >
-                <ChevronRight className="w-6 h-6 group-hover:text-blue-400 transition-colors" />
-              </button>
+              <div className="md:block hidden">
+                <button 
+                  onClick={prevProject}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 p-3 text-gray-300 hover:text-white bg-gray-900/50 hover:bg-gray-900 rounded-full transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-gray-700 hover:border-blue-500 group"
+                  aria-label="Previous project"
+                >
+                  <ChevronLeft className="w-6 h-6 group-hover:text-blue-400 transition-colors" />
+                </button>
+                <button 
+                  onClick={nextProject}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-16 p-3 text-gray-300 hover:text-white bg-gray-900/50 hover:bg-gray-900 rounded-full transition-all duration-300 hover:scale-110 backdrop-blur-sm border border-gray-700 hover:border-blue-500 group"
+                  aria-label="Next project"
+                >
+                  <ChevronRight className="w-6 h-6 group-hover:text-blue-400 transition-colors" />
+                </button>
+              </div>
               
               {/* Project Indicators */}
               <div className="flex justify-center gap-3 mt-8">
@@ -604,7 +638,7 @@ function App() {
       <footer className="py-8 glass-effect">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400">© 2024 João Mateus. Todos os direitos reservados.</p>
+            <p className="text-gray-400"> 2024 João Mateus. Todos os direitos reservados.</p>
             <div className="flex gap-4">
               <a href="https://github.com/joaomgsb" 
                  className="text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 hover:rotate-6">
